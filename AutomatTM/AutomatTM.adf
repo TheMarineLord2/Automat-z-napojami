@@ -18,8 +18,10 @@ FLOWTOOLS=NONE
 FAMILY=
 [Files]
 /motherboard.vhd=-1
+/M_Base.vhd=-1
 [Files.Data]
 .\src\motherboard.vhd=VHDL Source Code
+.\src\M_Base.vhd=VHDL Source Code
 [HierarchyViewer]
 HierarchyInformation=
 ShowHide=ShowTopLevel
