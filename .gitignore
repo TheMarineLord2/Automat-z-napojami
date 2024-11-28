@@ -1,0 +1,13 @@
+*.cfg
+*.wsp
+*.mgf
+*.lib
+*.set
+*.order
+
+log/
+compile/
+
+*.wsw
+*.log
+*.wsw
