@@ -23,6 +23,6 @@ FAMILY=
 .\src\motherboard.vhd=VHDL Source Code
 .\src\M_Base.vhd=VHDL Source Code
 [HierarchyViewer]
-HierarchyInformation=
+HierarchyInformation=vending_machine|behavioral|0
 ShowHide=ShowTopLevel
 Selected=
