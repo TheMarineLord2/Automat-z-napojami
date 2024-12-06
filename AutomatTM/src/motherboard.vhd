@@ -1,16 +1,23 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 entity vending_machine is
     Port (
         clk           : in STD_LOGIC;
         reset         : in STD_LOGIC;
         selection     : in STD_LOGIC_VECTOR(3 downto 0); -- wybór produktu
-        card_payment  : in STD_LOGIC; -- sygna³ p³atnoœci kart¹
         dispense      : out STD_LOGIC;  -- sygna³ do wydania napoju
         display_rq    : out STD_LOGIC_VECTOR(3 downto 0); -- wyœwietlacz  --------------------------------------------------------------- /ENTITY W OSOBNYM PLIKU KTÓRA ZAJMIE SIE DISPLAYEM,
-        leds          : out STD_LOGIC_VECTOR(7 downto 0)  -- diody																--------- \
+        leds          : out STD_LOGIC_VECTOR(7 downto 0); -- diody																--------- \
+		-- M_BASE
+		M_p_avaiab	 		: inout STD_LOGIC	:='0';
+		M_pfand 			: inout UNSIGNED(7 downto 0):="00000000";
+		M_p_price 			: inout UNSIGNED(7 downto 0):="00000000";
+		M_aut				: inout STD_LOGIC_VECTOR(1 downto 0)		:="00";
+		M_pfand_R			: inout STD_LOGIC;
+		M_bottle_inserted 	: inout STD_LOGIC;
+		M_p_code		  	: inout STD_LOGIC_VECTOR(3 downto 0) :="0000"
     );
 end vending_machine;
 
@@ -33,43 +40,27 @@ architecture Behavioral of vending_machine is
     -- Definiowanie kodów b³êdów
     constant ERROR_NO_SELECTION : STD_LOGIC_VECTOR(3 downto 0) := "1110"; -- Brak wybranego produktu	 ---------------------------------- DOROBIC KODY BLEDOW
     constant ERROR_OUT_OF_ORDER : STD_LOGIC_VECTOR(3 downto 0) := "1111"; -- Awaria													-------	Z NASZEGO PLIKU
-
+	
 begin
 	
-	--ENTITIES CONNECTED TO MOTHERBOARD--
+	
+	uut1: entity work.pfand PORT MAP (
+	    pfand_value => M_pfand,
+		reset => M_pfand_R,
+		bottle_inserted => M_bottle_inserted
+		
+	);
+	uut2: entity work.payment PORT MAP (
+	    price_to_pay => M_p_price,
+	    payment_status  => M_aut,
+ 		pfand_reset => M_pfand_R
+	);
+	uut3: entity work.m_data PORT MAP (
+		DB_p_code => M_p_code,
+		DB_p_price => M_p_price,
+		DB_p_avaiab => M_p_avaiab
+  );
 
-	--zliczacz portmap is	  											-- ZLICZACZ LICZY BUTELKI								 MARCIN
-	-- in reset
-	-- in count+1  --	 jako IN WEJSCIA Z URZADZENIA / Z ZEWNATRZ
-	-- out request 3to0 albo 7to0--ZAWSZE
-	
-	--baza_danych_cen portmap is										-- BAZA_DANYCH  --zwraca, ze produktu nie ma			 KUBA
-	--in product code  3to0																--zwraca cene pomniejszono o kaucje
-	--in kaucja	 3to0
-	--out cena_k 3to0
-	--out wyjscie_magazyn
-	
-	
-	--platnoœæ portmap is												-- PLATNOSC     -- zwraca potwierdzenie, resetuje kaucje   MARCIN
-	--in kwota_do_zaplaty ---- dziala jak rising_edge "pull request" 
-	--out reset           ---- do resetowania kaucji
-	--out result
-	
-	
-	
-	
-	--wyswietlacz portmap												-- WYSWIETLA DANE										  MATEUSZ
-	--in kod wiadomosci do wyswietlenia
-	--
-																		--													      MATEUSZ
-	-- "dispenser" portmap 												== WYDAJE PRODUKT I ZARZADZA PROCESEM -- w srodku mozemy zrobic kontrolki dla wydawania produktu i tego,
-	-- in kod_produktu													-- czy kubek jest w ³apie, czy worek jest w ³apie
-	-- in dispense
-	-- out finished
-	
-	--##--##--##--##--##--##--##--
-	
-	
     process(clk, reset)
     begin
         if reset = '1' then
@@ -90,7 +81,7 @@ begin
     end process;
 	
 	
-    process(state, selection, card_payment)
+    process(state, selection, M_aut)
     begin
         case state is
             when idle =>
@@ -112,7 +103,7 @@ begin
 
             when selection_made =>
                 display_rq <= product_selected; 										-- "wybrano napoj X"
-                if card_payment = '1' then											    -- if card_payment = '10' then
+                if M_aut = "10" then											    -- if card_payment = '10' then
                     next_state <= dispensing;											-- if card_payment = '01' then wyrzuæ kod jaki mieliœmy 
                 else												   					-- else wait for paiment
                     next_state <= selection_made; 

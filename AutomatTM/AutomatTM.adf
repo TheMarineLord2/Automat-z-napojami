@@ -16,12 +16,17 @@ LANGUAGE=VHDL
 REFRESH_FLOW=1
 FLOWTOOLS=NONE
 FAMILY=
+fileopenfolder=C:\Users\jbull\OneDrive\Dokumenty\projektyVHDL\Automat_z_napojami\Automat-z-napojami\AutomatTM\src
 [Files]
+/payment.vhd=-1
+/pfand.vhd=-1
+/M_Data.vhd=-1
 /motherboard.vhd=-1
-/M_Base.vhd=-1
 [Files.Data]
+.\src\payment.vhd=VHDL Source Code
+.\src\pfand.vhd=VHDL Source Code
+.\src\M_Data.vhd=VHDL Source Code
 .\src\motherboard.vhd=VHDL Source Code
-.\src\M_Base.vhd=VHDL Source Code
 [HierarchyViewer]
 HierarchyInformation=vending_machine|behavioral|0
 ShowHide=ShowTopLevel
