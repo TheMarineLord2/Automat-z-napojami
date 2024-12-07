@@ -2,26 +2,27 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-entity vending_machine is
+entity vending_machine_real is
     Port (
-        clk           : in STD_LOGIC;
-        reset         : in STD_LOGIC;
+		clk         : in STD_LOGIC;
+        reset         : in STD_LOGIC:='0';
         selection     : in STD_LOGIC_VECTOR(3 downto 0); -- wybór produktu
-        dispense      : out STD_LOGIC;  -- sygna³ do wydania napoju
-        display_rq    : out STD_LOGIC_VECTOR(3 downto 0); -- wyœwietlacz  --------------------------------------------------------------- /ENTITY W OSOBNYM PLIKU KTÓRA ZAJMIE SIE DISPLAYEM,
-        leds          : out STD_LOGIC_VECTOR(7 downto 0); -- diody																--------- \
+        dispense      : out STD_LOGIC:='0';  -- sygna³ do wydania napoju
+        display_rq    : out STD_LOGIC_VECTOR(3 downto 0); -- wyœwietlacz
+		leds          : out STD_LOGIC_VECTOR(7 downto 0); -- diody																--------- \
 		-- M_BASE
 		M_p_avaiab	 		: inout STD_LOGIC	:='0';
-		M_pfand 			: inout UNSIGNED(7 downto 0):="00000000";
+		M_pfand 			: inout STD_LOGIC_VECTOR(7 downto 0):="00000000";
 		M_p_price 			: inout UNSIGNED(7 downto 0):="00000000";
+		M_p_price2p			: inout UNSIGNED(7 downto 0):="00000000";
 		M_aut				: inout STD_LOGIC_VECTOR(1 downto 0)		:="00";
-		M_pfand_R			: inout STD_LOGIC;
-		M_bottle_inserted 	: inout STD_LOGIC;
-		M_p_code		  	: inout STD_LOGIC_VECTOR(3 downto 0) :="0000"
+		M_pfand_R			: inout STD_LOGIC:='0';
+		M_bottle_inserted 	: in STD_LOGIC:='0'
     );
-end vending_machine;
+end vending_machine_real;
 
-architecture Behavioral of vending_machine is
+architecture Behavioral of vending_machine_real is
+	----------
     type state_type is (idle, selection_made, dispensing, error);
     signal state, next_state : state_type;
     signal product_selected : STD_LOGIC_VECTOR(3 downto 0); -- kod napoju
@@ -36,16 +37,9 @@ architecture Behavioral of vending_machine is
     constant JUICE_GRAPEFRUIT : STD_LOGIC_VECTOR(3 downto 0) := "0111"; -- Sok grejpfrutowy
     constant PEPSI : STD_LOGIC_VECTOR(3 downto 0) := "1000";         -- Pepsi
     constant COCA_COLA : STD_LOGIC_VECTOR(3 downto 0) := "1001";     -- Coca-Cola
-    
-    -- Definiowanie kodów b³êdów
-    constant ERROR_NO_SELECTION : STD_LOGIC_VECTOR(3 downto 0) := "1110"; -- Brak wybranego produktu	 ---------------------------------- DOROBIC KODY BLEDOW
-    constant ERROR_OUT_OF_ORDER : STD_LOGIC_VECTOR(3 downto 0) := "1111"; -- Awaria													-------	Z NASZEGO PLIKU
-	
 begin
-	
-	
 	uut1: entity work.pfand PORT MAP (
-	    pfand_value => M_pfand,
+	    pfand_value => M_pfand,	 -- std logic vector
 		reset => M_pfand_R,
 		bottle_inserted => M_bottle_inserted
 		
@@ -53,14 +47,22 @@ begin
 	uut2: entity work.payment PORT MAP (
 	    price_to_pay => M_p_price,
 	    payment_status  => M_aut,
- 		pfand_reset => M_pfand_R
+ 		pfand_reset => M_pfand_R  -- powinno samo resetowaæ bez udzia³u logiki p³yty g³ównej
 	);
 	uut3: entity work.m_data PORT MAP (
-		DB_p_code => M_p_code,
+		DB_p_code => selection,
 		DB_p_price => M_p_price,
 		DB_p_avaiab => M_p_avaiab
-  );
+    );
+	uut4: entity work.Displa PORT MAP (
+		clk => clk,
+        reset => reset,
+        selected =>	selection,
+        error_code => "0000",
+        displey_communication => leds
+    );
 
+	
     process(clk, reset)
     begin
         if reset = '1' then
@@ -87,16 +89,22 @@ begin
             when idle =>
                 dispense <= '0';
                 leds <= "00000000"; 
-                display_rq <= "0000"; 								   -- 
-                if selection /= "0000" then-- jesli wybrano produkt	   -- sprawdziæ i poczekaæ na informacje, ¿e produkt jest w systemie
-                    product_selected <= selection; 					   -- poprostu dla ka¿dego produktu wypisuje, czy jego iloœæ jest wiêksza ni¿ 1
+                display_rq <= "0000";
+                if selection /= "0000" then
+                    product_selected <= selection; 
+					
+					if(M_p_avaiab = '1') then
+						M_p_price2p <= M_p_price - unsigned(M_pfand); 
                     -- jesli produkt jest na stanie, to
 					-- "WYBRANO PRODUKT XYZ"
 					-- "sprawdzam cene;
-					next_state <= selection_made; -- i jeszcze to
+					next_state <= selection_made;
 					-----------
+					else 
+						next_state <= idle;
 					-- jesli produktu nie ma na stanie, to
 					-- "BRAK PRODUKTU XYZ"
+					end if;
                 else
                     next_state <= idle; 
                 end if;
@@ -119,4 +127,9 @@ begin
                 next_state <= idle;
         end case;
     end process;
+
+	
 end Behavioral;
+
+
+

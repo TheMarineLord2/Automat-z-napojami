@@ -4,7 +4,7 @@ VCS=0
 version=4
 Current Config=compile
 [Configurations]
-compile=AutomatTM
+compile=automattm
 [Library]
 AutomatTM=.\AutomatTM\AutomatTM.lib
 [$LibMap$]
@@ -21,13 +21,18 @@ fileopenfolder=C:\Users\jbull\OneDrive\Dokumenty\projektyVHDL\Automat_z_napojami
 /payment.vhd=-1
 /pfand.vhd=-1
 /M_Data.vhd=-1
+/Displa.vhd=-1
 /motherboard.vhd=-1
+/tb.vhd=-1
 [Files.Data]
 .\src\payment.vhd=VHDL Source Code
 .\src\pfand.vhd=VHDL Source Code
 .\src\M_Data.vhd=VHDL Source Code
+.\src\Displa.vhd=VHDL Source Code
 .\src\motherboard.vhd=VHDL Source Code
+.\src\tb.vhd=VHDL Source Code
+.\src\testbench.vhd=VHDL Source Code
 [HierarchyViewer]
-HierarchyInformation=vending_machine|behavioral|0
+HierarchyInformation=tb_vending_machine|behavior|0
 ShowHide=ShowTopLevel
 Selected=
