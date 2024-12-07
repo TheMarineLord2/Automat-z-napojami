@@ -5,7 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity payment is
     Port (
         price_to_pay   : in  UNSIGNED (7 downto 0);
-        payment_status : out STD_LOGIC_VECTOR(1 downto 0);                     -- Output signal: '1' = approved, '0' = rejected
+        payment_status : out STD_LOGIC_VECTOR(1 downto 0) :="00";                     -- Output signal: '1' = approved, '0' = rejected
         pfand_reset    : out STD_LOGIC                     -- Reset signal: '1' = reset, '0' = not reset
     );
 end payment;

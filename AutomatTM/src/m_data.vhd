@@ -29,7 +29,7 @@ entity M_Data is
 		DB_p_avaiab : out STD_LOGIC;
 		-- -mag_vect
 		mag_n1 : in STD_LOGIC_VECTOR(1 downto 0) :="00";
-		mag_n2 : in STD_LOGIC_VECTOR(1 downto 0) :="00";
+		mag_n2 : in STD_LOGIC_VECTOR(1 downto 0) :="01";
 		mag_n3 : in STD_LOGIC_VECTOR(1 downto 0) :="00";
 		mag_n4 : in STD_LOGIC_VECTOR(1 downto 0) :="00";
 		mag_n5 : in STD_LOGIC_VECTOR(1 downto 0) :="00";

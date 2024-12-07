@@ -54,13 +54,13 @@ begin
 		
 		simulator_tb : process
 		begin 
-			
+		M_aut_tb <= "00";	
 		reset_tb <= '1';
         wait for 5ns;
         reset_tb <= '0';
         selection_tb <= "0000";  -- Selecting Water light
         wait for 5ns;   -- Wait for clock edge
-        M_aut_tb <= "10";         -- No payment0
+        M_aut_tb <= "00";         -- No payment0
         wait for 5ns;   -- Wait for clock edge
         M_bottle_inserted_tb <= '1';         -- No payment0	 
 		wait for 5ns; 
@@ -71,8 +71,9 @@ begin
 		M_bottle_inserted_tb <= '0';         -- No payment0	 
 		wait for 5ns; 
 		selection_tb <= "0010";  -- Selecting Water light
-        wait for 5ns;
-		
+        wait for 15ns;
+		M_aut_tb <= "10";
+				  
         wait;  -- Wait and observe behavior
 		end process;
 end tb;
